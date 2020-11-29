@@ -39,10 +39,13 @@ class ExtraCodeBuilder:
             self._extra_code += '\nnotebook_source = \'\'\'' + f.read() + '\'\'\'\n\n'
     
     def add_code(self, code):
-        '`code` can be `Class` of `function`'
-        self._extra_code += '\n' + inspect.getsource(code) + '\n'
-        # with open(extra_code, 'r') as f:
-        #     self._extra_code += '\n' + f.read() + '\n'
+        '`code` can be `str`, `Class` or `function`'
+        if type(code) == str:
+            self._extra_code += '\n' + code + '\n'
+        else:
+            self._extra_code += '\n' + inspect.getsource(code) + '\n'
+        # with open(extra_code, 'r') as f:  
+        #     self._extra_code += '\n' + f.read() + '\n'            
             
     @property
     def get_code(self):

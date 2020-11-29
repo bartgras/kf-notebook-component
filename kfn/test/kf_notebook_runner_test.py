@@ -3,8 +3,8 @@ import os
 import tempfile
 import re
 
-from kf_notebook_runner import KFNotebookRunner
-from notebooks_source import notebook_source, invalid_notebook_source
+from kfn.kf_notebook_runner import KFNotebookRunner
+from kfn.test.notebooks_source import notebook_source, invalid_notebook_source
 
 kernel = os.environ.get('NOTEBOOK_KERNEL_NAME')
 

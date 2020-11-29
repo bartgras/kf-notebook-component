@@ -2,8 +2,8 @@ import unittest
 import inspect
 import tempfile
 
-from nb_component_builder import NbComponentBuilder
-from notebooks_source import notebook_source, invalid_notebook_source
+from kfn.nb_component_builder import NbComponentBuilder
+from kfn.test.notebooks_source import notebook_source, invalid_notebook_source
 
 def get_tmp_notebook(source):
     tf = tempfile.NamedTemporaryFile(suffix='.py')

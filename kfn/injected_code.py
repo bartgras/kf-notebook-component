@@ -1,4 +1,4 @@
-from kf_notebook_runner import KFNotebookRunner
+#from kfn.kf_notebook_runner import KFNotebookRunner
 
 notebook_injected_artifacts = '''
 

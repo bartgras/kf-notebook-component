@@ -41,9 +41,11 @@ class NbComponentBuilder:
 
         if self.inject_extra_code:
             self.extra_code_builder = ExtraCodeBuilder()
-            #TODO: add KFNotebookRunner imports
-            for code in [notebook_injected_artifacts, notebook_injected_code, KFNotebookRunner, exec_nb]:
-                self.extra_code_builder.add_code(code)
+
+            with open('./kfn/imports.py', 'r') as f:
+                imports_source = f.read()
+                for code in [notebook_injected_artifacts, notebook_injected_code, imports_source, KFNotebookRunner, exec_nb]:
+                    self.extra_code_builder.add_code(code)
 
         if self.inject_notebook_path:
             if not self.extra_code_builder:

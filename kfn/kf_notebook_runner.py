@@ -1,15 +1,17 @@
 # TODO: FIX @@@@@@@@@@@@@@
 # Note: Imports moved inside class to make it easier to inject 
 # source code into Kubeflow component
-import os
-import re
-import pickle
-from jupytext.cli import jupytext
-import papermill
-from nbconvert import HTMLExporter
-from traitlets.config import Config
-from collections import namedtuple
-import json
+# import os
+# import re
+# import pickle
+# from jupytext.cli import jupytext
+# import papermill
+# from nbconvert import HTMLExporter
+# from traitlets.config import Config
+# from collections import namedtuple
+# import json
+
+from kfn.imports import *
 
 from injected_code import notebook_injected_artifacts, notebook_injected_code
 
