@@ -1,0 +1,4 @@
+nbconvert==0.5.1
+papermill==2.2.2
+jupytext==1.7.1
+kfp==1.1.1

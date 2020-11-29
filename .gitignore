@@ -1,0 +1,10 @@
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+/dist/
+build/
+.settings/
+.project
+.classpath
+.vscode/
+.venv/
