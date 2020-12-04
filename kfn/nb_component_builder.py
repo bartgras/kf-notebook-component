@@ -1,13 +1,13 @@
 import re
-import inspect
+import pkgutil
 import kfp.components as comp
-from lib import ExtraCodeBuilder, convert_source_to_func
-from kf_notebook_runner import KFNotebookRunner
-from injected_code import notebook_injected_artifacts, notebook_injected_code, exec_nb
+from kfn.lib import ExtraCodeBuilder, convert_source_to_func
+from kfn.kf_notebook_runner import KFNotebookRunner
+from kfn.injected_code import notebook_injected_artifacts, notebook_injected_code, exec_nb
 
 class NbComponentBuilder:
-    def __init__(self, op_name, extra_code_instance=None, inject_notebook_path=None, 
-                 remote_notebook_path=None, remove_nb_inputs=False, inject_extra_code=True):
+    def __init__(self, op_name, inject_notebook_path=None, remote_notebook_path=None, 
+                 remove_nb_inputs=False):
         '''
         Builds Kubeflow component that executes code inside Jupyter Notebook
 
@@ -18,34 +18,28 @@ class NbComponentBuilder:
           paired with percent script")
         - remote_notebook_path - path to Google/AWS storage from which notebook will be fetched
         - remove_nb_inputs - if True, generated notebook HTML output won't have notebook input cells
-        - inject_extra_code - by default, when set to True, it injects into component instance
-          code required to @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ FINISH
         '''
         assert inject_notebook_path or remote_notebook_path, \
             'You need to provide either path to google storage or local filename path ' + \
             'of the notebook that will be injected into component'
         assert not (inject_notebook_path and remote_notebook_path), \
             'Choose either notebook source or path, can\'t do both.'     
+            
         self.op_name = re.sub(r'[^a-zA-Z0-9_]+', '', op_name.replace(' ','-').lower())    
         self.input_params = []
         self.output_params = []
         self.input_artifacts = []
         self.output_artifacts = []
-        #self.extra_code_instance = extra_code_instance
         self.inject_notebook_path = inject_notebook_path
         self.remote_notebook_path = remote_notebook_path
         self.remove_nb_inputs = remove_nb_inputs
-        self.inject_extra_code = inject_extra_code
-        
-        self.extra_code_builder = None
 
-        if self.inject_extra_code:
-            self.extra_code_builder = ExtraCodeBuilder()
+        self.extra_code_builder = ExtraCodeBuilder()
+        imports_source = pkgutil.get_data(__name__, "imports.py")
+        injected_code_source = pkgutil.get_data(__name__, "injected_code.py")
 
-            with open('./kfn/imports.py', 'r') as f:
-                imports_source = f.read()
-                for code in [notebook_injected_artifacts, notebook_injected_code, imports_source, KFNotebookRunner, exec_nb]:
-                    self.extra_code_builder.add_code(code)
+        for code in [imports_source.decode(), injected_code_source.decode(), KFNotebookRunner]:
+            self.extra_code_builder.add_code(code)
 
         if self.inject_notebook_path:
             if not self.extra_code_builder:
@@ -71,7 +65,7 @@ class NbComponentBuilder:
     def add_output_artifact(self, name):
         self.output_artifacts.append(name)        
     
-    def build_component_function(self):
+    def build_component_function_source(self):
         def input_param_to_str(p):
             s = '%s: %s' % (p['param_name'], p['param_type'].__name__)
             if p.get('default_value'):
@@ -104,7 +98,6 @@ class NbComponentBuilder:
                       if self.input_artifacts else '',
             remove_nb_inputs='True' if self.remove_nb_inputs else 'False'
         )
-        #print(func_body)
 
         args_str = []
         args_str = ['%s: OutputPath(str)' % p for p in self.output_artifacts]
@@ -125,18 +118,17 @@ class NbComponentBuilder:
         func_source = 'from kfp.components import InputPath, OutputPath\n' 
         func_source += 'from typing import NamedTuple\n\n'
         func_source += f'def {self.op_name}({args_str}) -> {return_str}:\n{func_body}'
-        print(func_source)
         return func_source
 
-    def exec_component_function(self):
+    def build_component_function(self):
         '''`kfp` module uses `inspect.getsource()` method which won't work unless 
         function's source code is loaded from a file'''
-        function_source = self.build_component_function()
+        function_source = self.build_component_function_source()
         return convert_source_to_func(function_source, self.op_name)
     
     def build_op(self, base_image, packages_to_install=[], *args, **kwargs):
         task_op = comp.func_to_container_op(
-            self.exec_component_function(), 
+            self.build_component_function(), 
             base_image=base_image,
             packages_to_install=packages_to_install,
             extra_code=self.extra_code_builder.get_code,

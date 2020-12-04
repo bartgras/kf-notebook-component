@@ -1,18 +1,17 @@
 import unittest
 import os
-import tempfile
 import re
 
 from kfn.kf_notebook_runner import KFNotebookRunner
 from kfn.test.notebooks_source import notebook_source, invalid_notebook_source
+from kfn.test.lib import get_tmp_notebook
 
-kernel = os.environ.get('NOTEBOOK_KERNEL_NAME')
-
-def get_tmp_notebook(source):
-    tf = tempfile.NamedTemporaryFile(suffix='.py')
-    with open(tf.name, 'w') as f:
-        f.write(source)
-    return tf
+try:
+    kernel = os.environ['NOTEBOOK_KERNEL_NAME']
+except:
+    raise Exception('Set environment variable that points to your ' + \
+                    'Jupyter kernel that will execute the notebook. ' + \
+                    'Example: NOTEBOOK_KERNEL_NAME=<kernel_name>')
 
 class KFNotebookRunnerTestCase(unittest.TestCase):
     def test_executes_without_params(self):

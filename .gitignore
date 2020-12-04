@@ -8,3 +8,4 @@ build/
 .classpath
 .vscode/
 .venv/
+kfn.egg-info/

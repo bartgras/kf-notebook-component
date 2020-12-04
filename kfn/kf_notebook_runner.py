@@ -11,9 +11,8 @@
 # from collections import namedtuple
 # import json
 
-from kfn.imports import *
-
-from injected_code import notebook_injected_artifacts, notebook_injected_code
+from kfn.imports import os, re, pickle, jupytext, papermill, HTMLExporter, Config, namedtuple, json
+from kfn.injected_code import notebook_injected_artifacts, notebook_injected_code
 
 class KFNotebookRunner:
     def __init__(self, local_py_name, inject_params={}, remove_nb_inputs=False, kernel_name='python3'):

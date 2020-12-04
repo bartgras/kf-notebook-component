@@ -14,28 +14,13 @@
 # ---
 
 # %% tags=["parameters"]
-a = 11
-b = 10
+x = None
+d = None
 
 # %%
-print(a)
+import numpy as np
+
+x
 
 # %%
-for i in range(a):
-    print(i)
-
-# %%
-print('asdf')
-
-# %%
-data = {
-    'a': np.random.randint(0, 100, 20),
-    'b': np.random.randint(0, 100, 20)
-}
-
-df = pd.DataFrame(data=data)
-df.plot()
-
-# %%
-outputs = {'a': a, 'b': b}
-artifacts = {'x': np.random.randint(0, 100, 20)}
+d

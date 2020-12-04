@@ -58,8 +58,6 @@ def exec_nb(_locals, input_params, output_params, use_injected_nb_source_code=Fa
     
     if input_artifacts:
         params_dict.update({'_input_artifacts': str(input_artifacts)})
-            
-    print("FINAL params_dict: ", params_dict)
     
     if use_injected_nb_source_code:        
         with open(tmp_notebook, 'w') as f:
@@ -75,7 +73,6 @@ def exec_nb(_locals, input_params, output_params, use_injected_nb_source_code=Fa
         inject_params=params_dict,
         remove_nb_inputs=remove_nb_inputs) 
     nr.run()
-    print("NOTEBOOK OUTPUTS:", nr.outputs)
     
     metadata = {
         'outputs' : [{
@@ -88,7 +85,6 @@ def exec_nb(_locals, input_params, output_params, use_injected_nb_source_code=Fa
     metrics_list = []
     
     if nr.metrics:
-        print("NOTEBOOK METRICS:", nr.metrics)
         if type(nr.metrics) != dict:
             raise(TypeError('Invalid metrics format. Passed values are: %s' % nr.metrics))
 
@@ -105,7 +101,6 @@ def exec_nb(_locals, input_params, output_params, use_injected_nb_source_code=Fa
             })
     metrics = {'metrics': metrics_list}
     
-    print("METRICS:", metrics)
     tuple_outputs = [json.dumps(metadata), json.dumps(metrics)] + [nr.outputs[p] for p in output_params]
     
     tuple_inputs = ['mlpipeline_ui_metadata', 'mlpipeline_metrics']
