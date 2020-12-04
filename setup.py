@@ -3,7 +3,7 @@ from setuptools import setup
 setup(name='kfn',
       version='0.1',
       description='Kubeflow notebook component builder',
-      url='http://github.com/bartgras/kf_notebook_component',
+      url='https://github.com/bartgras/kf-notebook-component',
       author='Bart Grasza',
       author_email='bartgras@protonmail.com',
       license='MIT',
